@@ -3,12 +3,13 @@ import BundeslandDatenbank from "./BundeslandDatenbank";
 
 // ── SPRACHEN ─────────────────────────────────────────────────────────────────
 const LANGS = [
+  { code:"de", label:"Deutsch",    flag:"🇩🇪", dir:"ltr" },
+  { code:"en", label:"English",    flag:"🇬🇧", dir:"ltr" },
   { code:"ar", label:"عربي",       flag:"🇸🇦", dir:"rtl" },
   { code:"tr", label:"Türkçe",     flag:"🇹🇷", dir:"ltr" },
   { code:"uk", label:"Українська", flag:"🇺🇦", dir:"ltr" },
   { code:"ru", label:"Русский",    flag:"🇷🇺", dir:"ltr" },
   { code:"fa", label:"فارسی",      flag:"🇮🇷", dir:"rtl" },
-  { code:"en", label:"English",    flag:"🇬🇧", dir:"ltr" },
   { code:"fr", label:"Français",   flag:"🇫🇷", dir:"ltr" },
   { code:"es", label:"Español",    flag:"🇪🇸", dir:"ltr" },
   { code:"vi", label:"Tiếng Việt", flag:"🇻🇳", dir:"ltr" },
@@ -603,7 +604,7 @@ function FormsTab({lang}) {
 // ══════════════════════════════════════════════════════════════════════════════
 export default function App() {
   const [tab,setTab] = useState("scan");
-  const [lang,setLang] = useState("ar");
+  const [lang,setLang] = useState("de");
   const [showLP,setShowLP] = useState(false);
   const [chatContext,setChatContext] = useState(null);
   const ln = getLang(lang); const u = getUI(lang);
