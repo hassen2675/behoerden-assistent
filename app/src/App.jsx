@@ -36,10 +36,10 @@ const UI = {
 function getUI(lang){ return UI[lang] || UI.de; }
 function getLang(code){ return LANGS.find(l=>l.code===code)||LANGS[0]; }
 
-async function callClaude(messages, system, maxTokens=1200) {
+async function callClaude(messages, system, maxTokens=1200, model="claude-sonnet-4-5") {
   const r = await fetch("/api/claude", {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-sonnet-4-5",max_tokens:maxTokens,system,messages}),
+    body:JSON.stringify({model,max_tokens:maxTokens,system,messages}),
   });
   if(!r.ok) throw new Error(`${r.status}`);
   const d = await r.json();
@@ -245,7 +245,7 @@ function ChatTab({lang, prefilledContext}) {
   const [msgs,setMsgs]=useState([initialMsg]);
   const [input,setInput]=useState("");const[loading,setLoading]=useState(false);const[showQ,setShowQ]=useState(true);
   const bottomRef=useRef();
-  async function send(text){const msg=text||input;if(!msg.trim()||loading)return;setInput("");setShowQ(false);const nm=[...msgs,{role:"user",content:msg}];setMsgs(nm);setLoading(true);try{const r=await callClaude(nm.filter(m=>!m.intro).map(m=>({role:m.role,content:m.content})),SYS,1400);setMsgs([...nm,{role:"assistant",content:r}]);}catch(e){setMsgs([...nm,{role:"assistant",content:u.chatError+": "+e.message}]);}setLoading(false);setTimeout(()=>bottomRef.current?.scrollIntoView({behavior:"smooth"}),100);}
+  async function send(text){const msg=text||input;if(!msg.trim()||loading)return;setInput("");setShowQ(false);const nm=[...msgs,{role:"user",content:msg}];setMsgs(nm);setLoading(true);try{const r=await callClaude(nm.filter(m=>!m.intro).map(m=>({role:m.role,content:m.content})),SYS,1400,"claude-haiku-4-5-20251001");setMsgs([...nm,{role:"assistant",content:r}]);}catch(e){setMsgs([...nm,{role:"assistant",content:u.chatError+": "+e.message}]);}setLoading(false);setTimeout(()=>bottomRef.current?.scrollIntoView({behavior:"smooth"}),100);}
 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
@@ -294,7 +294,7 @@ function FormsTab({lang}) {
   const[answers,setAnswers]=useState({});const[curAns,setCurAns]=useState("");const[result,setResult]=useState("");const[loading,setLoading]=useState(false);
 
   async function startForm(form){setSel(form);setStep(0);setAnswers({});setResult("");setQs([]);setLoading(true);
-    try{const raw=await callClaude([{role:"user",content:`Formular: "${form.label}". Stelle 5 einfache Fragen auf ${ln.label}. NUR JSON Array:\n[{"id":"q0","frage":"Frage","beispiel":"Beispiel","pflicht":true}]`}],"NUR JSON.",600);setQs(JSON.parse(raw.replace(/```json|```/g,"").trim()));}
+    try{const raw=await callClaude([{role:"user",content:`Formular: "${form.label}". Stelle 5 einfache Fragen auf ${ln.label}. NUR JSON Array:\n[{"id":"q0","frage":"Frage","beispiel":"Beispiel","pflicht":true}]`}],"NUR JSON.",600,"claude-haiku-4-5-20251001");setQs(JSON.parse(raw.replace(/```json|```/g,"").trim()));}
     catch{setQs([{id:"q0",frage:"Ihr Name?",beispiel:"Max Mustermann",pflicht:true},{id:"q1",frage:"Adresse?",beispiel:"Musterstr. 1, 10115 Berlin",pflicht:true},{id:"q2",frage:"Geburtsdatum?",beispiel:"01.01.1990",pflicht:true}]);}
     setLoading(false);}
   async function nextStep(){const na={...answers,[qs[step].id]:curAns};setAnswers(na);setCurAns("");
